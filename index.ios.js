@@ -19,7 +19,7 @@ import React, {
 } from 'react-native';
 
 const screen = Dimensions.get('window');
-const Shape = ART.Shape;
+const Shape = Animated.createAnimatedComponent(ART.Shape);
 const Path = ART.Path;
 
 const styles = StyleSheet.create({
