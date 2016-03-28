@@ -62,10 +62,7 @@ class MyRefreshControl extends Component {
             onPanResponderMove: (e, gestureState) => {
                 console.log('move', gestureState.moveX, gestureState.moveY);
                 this.state.pan.setValue({ x: gestureState.moveX, y: gestureState.moveY });
-                this.setState({ bla: {
-                    x: gestureState.moveX,
-                    y: gestureState.moveY,
-                }});
+                this.setState(this.state);
             },
             onPanResponderRelease: () => {
                 console.log('end');
@@ -97,7 +94,6 @@ class MyRefreshControl extends Component {
                   height={screen.height}>
                   <Shape
                       d={path}
-                      width={this.state.pan.x}
                       height={400}
                       fill="#b0b0b0"
                   />
