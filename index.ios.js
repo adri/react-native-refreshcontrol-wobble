@@ -17,8 +17,11 @@ import React, {
   PanResponder,
   Animated
 } from 'react-native';
+import {Motion, spring} from 'react-motion';
+
 
 const screen = Dimensions.get('window');
+const Surface = Animated.createAnimatedComponent(ART.Surface);
 const Shape = Animated.createAnimatedComponent(ART.Shape);
 const Path = ART.Path;
 
@@ -34,10 +37,10 @@ const styles = StyleSheet.create({
     },
 });
 
-var makeRectanglePath = function(x, y, w, h, left, top) {
+var makeRectanglePath = function(w, h, left, top) {
     const leftPercent =  1.0 - left / w;
     return new Path()
-        .moveTo(x, y)
+        .moveTo(0, 0)
         .line(w, 0)
         .line(0, h)
         .curve(
@@ -52,7 +55,8 @@ class MyRefreshControl extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            pan: new Animated.ValueXY({ x: 200, y: 0 }),
+            left: 200,
+            top: 0,
         };
 
         this._panResponder = PanResponder.create({
@@ -60,45 +64,39 @@ class MyRefreshControl extends Component {
             onMoveShouldSetPanResponder: () => true,
             onPanResponderGrant: () => true,
             onPanResponderMove: (e, gestureState) => {
-                console.log('move', gestureState.moveX, gestureState.moveY);
-                this.state.pan.setValue({ x: gestureState.moveX, y: gestureState.moveY });
-                this.setState(this.state);
+                this.setState({
+                  left: gestureState.moveX,
+                  top: gestureState.moveY
+                })
             },
             onPanResponderRelease: () => {
-                console.log('end');
-                Animated.spring(
-                    this.state.pan,
-                    { toValue: { x: 0, y: 0 } }
-                ).start();
+                this.setState({
+                  left: spring(screen.width / 2),
+                  top: spring(0)
+                });
             }
         });
     }
 
   render() {
-      console.log('render', this.state.pan.x.__getValue(), this.state.pan.y.__getValue());
-
-      var path = makeRectanglePath(
-          0,
-          0,
-          screen.width,
-          0,
-          this.state.pan.x.__getValue() || 0,
-          this.state.pan.y.__getValue() || 0
-      );
       return (
-          <Animated.View
+          <View
               {...this._panResponder.panHandlers}
               style={styles.refreshControl}>
-              <ART.Surface
-                  width={screen.width}
-                  height={screen.height}>
-                  <Shape
-                      d={path}
-                      height={400}
-                      fill="#b0b0b0"
-                  />
-              </ART.Surface>
-          </Animated.View>
+              <Motion style={{left: this.state.left, top: this.state.top}}>{
+                ({left, top}) =>
+                  <Surface
+                      width={screen.width}
+                      height={screen.height}>
+                      <Shape
+                          d={makeRectanglePath(screen.width, 0, left, top)}
+                          height={400}
+                          fill="#b0b0b0"
+                      />
+                  </Surface>
+              }
+              </Motion>
+          </View>
       );
   }
 }
