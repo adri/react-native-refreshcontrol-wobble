@@ -48,31 +48,11 @@ var makeRectanglePath = function(x, y, w, h, left, top) {
         .close();
 };
 
-//class Refresh extends Component {
-//
-//    render() {
-//        //var { pan, width, height, ...props} = this.props;
-//        //var { top, left } = pan.getLayout();
-//        //console.log('render', pan.getLayout());
-//
-//        return (
-//            <Shape
-//                d={path}
-//                {...props} />
-//        );
-//    }
-//}
-
-
 class MyRefreshControl extends Component {
     constructor(props) {
         super(props);
         this.state = {
             pan: new Animated.ValueXY({ x: 200, y: 0 }),
-            //bla: {
-            //    x: 200,
-            //    y: 0,
-            //},
         };
 
         this._panResponder = PanResponder.create({
@@ -81,17 +61,11 @@ class MyRefreshControl extends Component {
             onPanResponderGrant: () => true,
             onPanResponderMove: (e, gestureState) => {
                 console.log('move', gestureState.moveX, gestureState.moveY);
-                //this.state.pan.x.setValue(gestureState.moveX);
-                //this.state.pan.y.setValue(gestureState.moveY);
                 this.state.pan.setValue({ x: gestureState.moveX, y: gestureState.moveY });
                 this.setState({ bla: {
                     x: gestureState.moveX,
                     y: gestureState.moveY,
                 }});
-            },
-
-            onPanResponderTerminate: () => {
-                console.log('terminate');
             },
             onPanResponderRelease: () => {
                 console.log('end');
@@ -123,6 +97,7 @@ class MyRefreshControl extends Component {
                   height={screen.height}>
                   <Shape
                       d={path}
+                      width={this.state.pan.x}
                       height={400}
                       fill="#b0b0b0"
                   />
